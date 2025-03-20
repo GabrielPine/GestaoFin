@@ -1,0 +1,35 @@
+.headerEscuro {
+    background-color: rgb(18, 18, 207); 
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 20px; 
+    position: relative;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.header img {
+    width: 150px;
+    height: auto;
+}
+
+
+.text-container {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); 
+}
+
+
+.header-text {
+    font-size: 24px; 
+    font-weight: bold;
+    text-align: center; 
+}
+
+

@@ -1,0 +1,16 @@
+<div class="p-6 bg-gray-50 min-h-screen flex flex-col items-center">
+  <h1 class="text-3xl font-bold text-gray-700">Bem-vindo, {{ usuarioNome }}</h1>
+
+  <div class="w-full max-w-6xl mt-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white shadow-md p-6 rounded-lg">
+        <h2 class="text-xl font-semibold mb-4">Movimentação Mensal</h2>
+        <canvas id="chart"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <button (click)="logout()" class="mt-6 bg-red-600 hover:bg-red-700 text-white p-3 rounded-md font-bold">
+    Sair
+  </button>
+</div>
