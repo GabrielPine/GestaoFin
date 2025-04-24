@@ -7,6 +7,23 @@ from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash
 import traceback
+import time
+import sqlalchemy.exc
+
+# Tentativa de conexão com o banco
+for i in range(10):
+    try:
+        with app.app_context():
+            db.create_all()
+        print("✅ Banco conectado com sucesso!")
+        break
+    except sqlalchemy.exc.OperationalError as e:
+        print(f"❌ Tentativa {i+1}/10 falhou: {e}")
+        time.sleep(3)
+else:
+    print("❌ Não foi possível conectar ao banco de dados após várias tentativas.")
+    exit(1)
+
 
 # Configuração do Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
