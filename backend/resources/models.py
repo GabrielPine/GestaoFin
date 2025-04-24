@@ -1,4 +1,6 @@
 from resources.config import db, bcrypt
+import re
+from flask import abort
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -12,10 +14,25 @@ class Usuario(db.Model):
 
     @senha.setter
     def senha(self, senha_plana):
+        if not self._validar_senha(senha_plana):
+            abort(400, description="Senha inválida. Ela deve ter ao menos 8 caracteres, uma letra maiúscula, uma minúscula, um número e um caractere especial.")
         self.senha_hash = bcrypt.generate_password_hash(senha_plana).decode('utf-8')
 
     def verificar_senha(self, senha_plana):
         return bcrypt.check_password_hash(self.senha_hash, senha_plana)
+
+    def _validar_senha(self, senha):
+        if len(senha) < 8:
+            return False
+        if not re.search(r"[A-Z]", senha):
+            return False
+        if not re.search(r"[a-z]", senha):
+            return False
+        if not re.search(r"\d", senha):
+            return False
+        if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", senha):
+            return False
+        return True
 
 class Movimentacao(db.Model):
     id = db.Column(db.Integer, primary_key=True)
