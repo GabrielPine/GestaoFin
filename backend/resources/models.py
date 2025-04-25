@@ -7,6 +7,17 @@ class Usuario(db.Model):
     username = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(100), unique=True, nullable=False)
     senha_hash = db.Column(db.String(100), nullable=False)
+    nomeCompleto = db.Column(db.String(120))
+    dataNascimento = db.Column(db.String(10))
+    genero = db.Column(db.String(20))
+    cpf = db.Column(db.String(14),unique=True )
+    telefone = db.Column(db.String(20))
+    endereco = db.Column(db.String(120))
+    cidade = db.Column(db.String(50))
+    estado = db.Column(db.String(50))
+    cep = db.Column(db.String(20))
+    rendaMensal = db.Column(db.String(20))
+    objetivo = db.Column(db.String(50))
 
     @property
     def senha(self):

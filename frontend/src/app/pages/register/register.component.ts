@@ -23,25 +23,28 @@ export class RegisterComponent {
       alert('Por favor, preencha todos os campos!')
       return
     }
-
+  
     this.http.post<any>('http://localhost:5000/registrar', {
       username: this.username,
       email: this.email,
-      senha: this.senha,
+      senha: this.senha
     }).subscribe({
       next: (response) => {
+        console.log('Resposta do backend:', response)
+        const userId = response.id
         alert('Conta criada com sucesso!')
-        this.router.navigate(['/login'])
+        this.router.navigate([`/perfil/${userId}`])
       },
       error: (error) => {
-        if (error.status === 400 && error.error && error.error.message) {
-          alert(error.error.message) // <-- mensagem detalhada do Flask
+        if (error.status === 400 && error.error?.mensagem) {
+          alert(error.error.mensagem)
         } else {
           alert('Erro ao criar conta, tente novamente.')
         }
       }
     })
   }
+  
 
   navigateToLogin() {
     this.router.navigate(['/login'])

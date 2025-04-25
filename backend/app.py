@@ -24,7 +24,6 @@ else:
     print("❌ Não foi possível conectar ao banco de dados após várias tentativas.")
     exit(1)
 
-
 # Configuração do Flask-Mail
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
@@ -57,15 +56,21 @@ class Registro(Resource):
         )
         db.session.add(novo_usuario)
         db.session.commit()
-        return {'mensagem': 'Usuário registrado com sucesso'}, 201
-
+        return {'mensagem': 'Usuário registrado com sucesso', 'id': novo_usuario.id}, 201
 
 class Login(Resource):
     def post(self):
         data = request.get_json()
         usuario = Usuario.query.filter_by(email=data['email']).first()
         if usuario and usuario.verificar_senha(data['senha']):
-            return {'mensagem': 'Login bem-sucedido', 'usuario': usuario.username}
+            return {
+                'mensagem': 'Login bem-sucedido',
+                'usuario': {
+                    'id': usuario.id,
+                    'username': usuario.username
+                }
+            }
+
         return {'mensagem': 'Credenciais inválidas'}, 401
 
 class MovimentacoesFinanceiras(Resource):
@@ -89,7 +94,55 @@ class ListarUsuarios(Resource):
             for u in usuarios
         ])
 
-# Rota para solicitação de redefinição de senha
+@app.route('/perfil/<int:user_id>', methods=['GET'])
+def perfil_usuario(user_id):
+    usuario = Usuario.query.get(user_id)
+    if not usuario:
+        return jsonify({'erro': 'Usuário não encontrado'}), 404
+    
+    return jsonify({
+        'id': usuario.id,
+        'username': usuario.username,
+        'email': usuario.email,
+        'nomeCompleto': usuario.nomeCompleto,
+        'dataNascimento': usuario.dataNascimento,
+        'genero': usuario.genero,
+        'cpf': usuario.cpf,
+        'telefone': usuario.telefone,
+        'endereco': usuario.endereco,
+        'cidade': usuario.cidade,
+        'estado': usuario.estado,
+        'cep': usuario.cep,
+        'rendaMensal': usuario.rendaMensal,
+        'objetivo': usuario.objetivo
+    })
+
+@app.route('/perfil/<int:user_id>', methods=['PUT'])
+def atualizar_perfil(user_id):
+    data = request.get_json()
+    usuario = Usuario.query.get(user_id)
+    if not usuario:
+        return jsonify({'erro': 'Usuário não encontrado'}), 404
+
+    usuario.username = data.get('username', usuario.username)
+    usuario.email = data.get('email', usuario.email)
+    usuario.nomeCompleto = data.get('nomeCompleto', usuario.nomeCompleto)
+    usuario.dataNascimento = data.get('dataNascimento', usuario.dataNascimento)
+    usuario.genero = data.get('genero', usuario.genero)
+    usuario.cpf = data.get('cpf', usuario.cpf)
+    usuario.telefone = data.get('telefone', usuario.telefone)
+    usuario.endereco = data.get('endereco', usuario.endereco)
+    usuario.cidade = data.get('cidade', usuario.cidade)
+    usuario.estado = data.get('estado', usuario.estado)
+    usuario.cep = data.get('cep', usuario.cep)
+    usuario.rendaMensal = data.get('rendaMensal', usuario.rendaMensal)
+    usuario.objetivo = data.get('objetivo', usuario.objetivo)
+
+    db.session.commit()
+
+    return jsonify({'mensagem': 'Perfil atualizado com sucesso'})
+
+
 class RequestPasswordReset(Resource):
     def post(self):
         try:
@@ -103,12 +156,10 @@ class RequestPasswordReset(Resource):
                 print("❌ Usuário não encontrado!")
                 return jsonify({'mensagem': 'Usuário não encontrado'}), 404
 
-            # Gerar o token seguro
             token = s.dumps(email, salt='reset-password')
             reset_url = f"http://localhost:4200/reset-password/{token}"
             print(f"🔑 Token gerado: {token}")
 
-            # Criar e enviar o e-mail
             msg = Message(
                 subject='Redefinição de Senha',
                 sender=app.config['MAIL_USERNAME'],
@@ -135,7 +186,6 @@ class RequestPasswordReset(Resource):
                 'status': 'error'
             }), 500
 
-# Rota para redefinir a senha usando o token
 class ResetPassword(Resource):
     def post(self, token):
         try:
@@ -156,7 +206,7 @@ class ResetPassword(Resource):
 
         return jsonify({'mensagem': 'Senha redefinida com sucesso!'}), 200
 
-# Registrando as rotas na API
+# Rotas RESTful
 api.add_resource(Home, '/')
 api.add_resource(Registro, '/registrar')
 api.add_resource(Login, '/login')

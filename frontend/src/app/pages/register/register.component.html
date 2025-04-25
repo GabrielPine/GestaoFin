@@ -6,24 +6,49 @@
     <form (ngSubmit)="register()">
       <div class="mb-3">
         <label for="username" class="form-label">Nome</label>
-        <input type="text" id="username" [(ngModel)]="username" name="username" class="form-control" placeholder="Digite seu nome" required>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="username"
+          name="username"
+          class="form-control"
+          placeholder="Digite seu nome"
+          required
+        >
       </div>
-    
+
       <div class="mb-3">
         <label for="email" class="form-label">E-mail</label>
-        <input type="email" id="email" [(ngModel)]="email" name="email" class="form-control" placeholder="Digite seu e-mail" required>
+        <input
+          type="email"
+          id="email"
+          [(ngModel)]="email"
+          name="email"
+          class="form-control"
+          placeholder="Digite seu e-mail"
+          required
+        >
       </div>
-    
+
       <div class="mb-3">
         <label for="senha" class="form-label">Senha</label>
-        <input type="password" id="senha" [(ngModel)]="senha" name="senha" class="form-control" placeholder="Digite sua senha" required>
+        <input
+          type="password"
+          id="senha"
+          [(ngModel)]="senha"
+          name="senha"
+          class="form-control"
+          placeholder="Digite sua senha"
+          required
+        >
       </div>
+
       <button type="submit" class="btn btn-primary w-100 mb-3">Criar Conta</button>
     </form>
 
-    <div class="text-center text-muted mt-0">
-      <div class="text-start mt-0 mb-3">Já possuí uma conta?</div>
-      <button (click)="navigateToLogin()" class="btn btn-custom-green w-100 mb-3">Entrar</button> 
+    <div class="text-center text-muted">
+      <p class="mb-2">Já possui uma conta?</p>
+      <button (click)="navigateToLogin()" class="btn btn-custom-green w-100">Entrar</button> 
     </div>
   </div>
 </div>

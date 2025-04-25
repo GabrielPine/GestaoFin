@@ -10,5 +10,5 @@ COPY . .
 RUN npm run build --prod
 RUN npm install -g http-server
 
-# ⬇️ ATENÇÃO AQUI
-CMD ["http-server", "dist/frontend/browser"]
+
+CMD ["http-server", "dist/frontend/browser", "-p", "8080", "--fallback", "index.html"]
