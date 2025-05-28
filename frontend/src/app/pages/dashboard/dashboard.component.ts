@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { HttpClient } from '@angular/common/http'
+import { RouterModule } from '@angular/router'; 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
-  imports: []
+  imports: [RouterModule]
 })
 export class DashboardComponent implements OnInit {
   usuarioNome: string = 'Usuário'
