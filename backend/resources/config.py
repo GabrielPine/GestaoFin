@@ -6,8 +6,9 @@ from flask_bcrypt import Bcrypt
 app = Flask(__name__)
 
 # Configuração do Banco de Dados
-app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "mysql+pymysql://root:12345@db/tcc")
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root@localhost:3306/tcc"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 # Configuração de Segurança
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "uma-chave-secreta-muito-segura")

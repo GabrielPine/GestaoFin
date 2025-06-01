@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from flask_restful import Api, Resource
 from flask_cors import CORS
-from resources.models import Usuario, Movimentacao
+from resources.models import Usuario, Movimentacao, ContaPagar
 from resources.config import app, db
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
@@ -205,6 +205,30 @@ class ResetPassword(Resource):
         db.session.commit()
 
         return jsonify({'mensagem': 'Senha redefinida com sucesso!'}), 200
+
+
+@app.route('/conta', methods=['POST'])
+def adicionar_conta():
+    data = request.get_json()
+    conta = ContaPagar(
+        usuario_id=data['usuario_id'],
+        descricao=data['descricao'],
+        valor=data['valor'],
+        data=data['data']
+    )
+    db.session.add(conta)
+    db.session.commit()
+    return jsonify({'mensagem': 'Conta adicionada com sucesso!'})
+
+@app.route('/contas/<int:usuario_id>', methods=['GET'])
+def listar_contas(usuario_id):
+    contas = ContaPagar.query.filter_by(usuario_id=usuario_id).all()
+    return jsonify([
+        {"descricao": c.descricao, "valor": float(c.valor)}
+        for c in contas
+    ])
+
+
 
 # Rotas RESTful
 api.add_resource(Home, '/')

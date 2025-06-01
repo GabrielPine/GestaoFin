@@ -1,5 +1,6 @@
 <div class="container-fluid">
   <div class="row min-vh-100">
+    <!-- Menu lateral -->
     <div class="col-2 bg-light d-flex flex-column align-items-center py-4 border-end">
       <h4 class="mb-4">Menu</h4>
       <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/dashboard']"><i class="bi bi-house"></i> Início</button>
@@ -9,67 +10,72 @@
       <button class="btn btn-outline-secondary w-100"><i class="bi bi-gear"></i> Configurações</button>
     </div>
 
+    <!-- Conteúdo principal -->
     <div class="col-10 py-4 px-5">
-      <h1 class="mb-4">Bem-vindo!</h1>
+      <h1 class="mb-4">Bem-vindo, {{ usuarioNome }}!</h1>
 
+      <!-- Cards de entrada -->
       <div class="row mb-5">
+        <!-- Contas a Pagar -->
         <div class="col-md-6 mb-4">
           <div class="card shadow">
             <div class="card-header bg-danger text-white">Contas a Pagar</div>
             <div class="card-body">
-              <form>
+              <form (ngSubmit)="salvarConta()">
                 <div class="mb-3">
                   <label>Descrição</label>
-                  <input type="text" class="form-control" placeholder="Ex: Conta de luz">
+                  <input [(ngModel)]="descricao" name="descricao" type="text" class="form-control" placeholder="Ex: Conta de luz" required>
                 </div>
                 <div class="mb-3">
                   <label>Valor</label>
-                  <input type="number" class="form-control" placeholder="R$">
+                  <input [(ngModel)]="valor" name="valor" type="number" class="form-control" placeholder="R$" required>
                 </div>
                 <div class="mb-3">
                   <label>Data</label>
-                  <input type="date" class="form-control">
+                  <input [(ngModel)]="data" name="data" type="date" class="form-control" required>
                 </div>
-                <button class="btn btn-danger w-100">Salvar</button>
+                <button type="submit" class="btn btn-danger w-100 mb-3">Salvar</button>
+              </form>
+
+              <!-- Upload CSV -->
+              <form (submit)="enviarCSV($event)">
+                <label class="form-label">Ou envie um arquivo CSV:</label>
+                <input type="file" (change)="selecionarArquivo($event)" class="form-control mb-2" accept=".csv" required />
+                <button class="btn btn-outline-secondary w-100" type="submit">Importar CSV</button>
               </form>
             </div>
           </div>
         </div>
 
+        <!-- Contas a Receber (Exibição Simples com Salário) -->
         <div class="col-md-6 mb-4">
           <div class="card shadow">
             <div class="card-header bg-success text-white">Contas a Receber</div>
             <div class="card-body">
-              <form>
-                <div class="mb-3">
-                  <label>Descrição</label>
-                  <input type="text" class="form-control" placeholder="Ex: Salário">
-                </div>
-                <div class="mb-3">
-                  <label>Valor</label>
-                  <input type="number" class="form-control" placeholder="R$">
-                </div>
-                <div class="mb-3">
-                  <label>Data</label>
-                  <input type="date" class="form-control">
-                </div>
-                <button class="btn btn-success w-100">Salvar</button>
-              </form>
+              <ul class="list-group">
+                <li class="list-group-item d-flex justify-content-between">
+                  <span>Salário</span>
+                  <span class="text-success">R$ {{rendaMensal}}</span>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
 
       <div class="row">
+        <!-- Contas a Pagar (listagem) -->
         <div class="col-md-4">
           <div class="card shadow mb-4">
             <div class="card-header">Contas a Pagar</div>
             <ul class="list-group list-group-flush">
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Água</span><span class="text-danger">R$ 150,00</span>
+              <li *ngFor="let conta of contasPagar" class="list-group-item d-flex justify-content-between">
+                <span>{{ conta.descricao }}</span>
+                <span class="text-danger">R$ {{ conta.valor }}</span>
               </li>
-              <li class="list-group-item d-flex justify-content-between">
-                <span>Energia</span><span class="text-danger">R$ 200,00</span>
+              <li *ngIf="contasPagar.length > 0" class="list-group-item d-flex justify-content-between fw-bold">
+                <span>Total</span>
+                <span class="text-danger">R$ {{totalContas}}</span>
               </li>
             </ul>
           </div>
@@ -77,26 +83,28 @@
 
         <div class="col-md-4">
           <div class="card shadow mb-4">
-            <div class="card-header">Contas a Receber</div>
+            <div class="card-header">Salário</div>
             <ul class="list-group list-group-flush">
               <li class="list-group-item d-flex justify-content-between">
-                <span>Salário</span><span class="text-success">R$ 3.000,00</span>
+                <span>Salário</span>
+                <span class="text-success">R$ {{rendaMensal}} </span>
               </li>
             </ul>
           </div>
         </div>
+
 
         <div class="col-md-4">
           <div class="card shadow mb-4">
             <div class="card-header">Saldo Total</div>
             <div class="card-body">
-              <h4 class="text-primary">R$ 2.650,00</h4>
-              <p class="mb-0">Atualizado em: 10/05/2025</p>
+              <h4 class="text-primary">R$ {{saldoTotal}}</h4>
+              <p class="mb-0">Atualizado em: {{dataAtualizacao}}</p>
             </div>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 </div>
+

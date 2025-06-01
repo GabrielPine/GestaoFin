@@ -1,6 +1,7 @@
 from resources.config import db, bcrypt
 import re
 from flask import abort
+from sqlalchemy import Numeric
 
 class Usuario(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -16,7 +17,7 @@ class Usuario(db.Model):
     cidade = db.Column(db.String(50))
     estado = db.Column(db.String(50))
     cep = db.Column(db.String(20))
-    rendaMensal = db.Column(db.String(20))
+    rendaMensal = db.Column(Numeric(10, 2))
     objetivo = db.Column(db.String(50))
 
     @property
@@ -53,3 +54,13 @@ class Movimentacao(db.Model):
     data_movimentacao = db.Column(db.DateTime, default=db.func.current_timestamp())
 
     usuario = db.relationship('Usuario', backref=db.backref('movimentacoes', lazy=True))
+
+
+class ContaPagar(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    descricao = db.Column(db.String(120), nullable=False)
+    valor = db.Column(db.Numeric(10, 2), nullable=False)
+    data = db.Column(db.Date, nullable=False)
+
+    usuario = db.relationship('Usuario', backref=db.backref('contas_pagar', lazy=True))
