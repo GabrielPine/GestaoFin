@@ -21,18 +21,18 @@
           <div class="card shadow">
             <div class="card-header bg-danger text-white">Contas a Pagar</div>
             <div class="card-body">
-              <form (ngSubmit)="salvarConta()">
+              <form (ngSubmit)="salvarConta()" #formConta="ngForm">
                 <div class="mb-3">
                   <label>Descrição</label>
-                  <input [(ngModel)]="descricao" name="descricao" type="text" class="form-control" placeholder="Ex: Conta de luz" required>
+                  <input [(ngModel)]="descricao" name="descricaoConta" type="text" class="form-control" placeholder="Ex: Conta de luz" required>
                 </div>
                 <div class="mb-3">
                   <label>Valor</label>
-                  <input [(ngModel)]="valor" name="valor" type="number" class="form-control" placeholder="R$" required>
+                  <input [(ngModel)]="valor" name="valorConta" type="number" class="form-control" placeholder="R$" required>
                 </div>
                 <div class="mb-3">
                   <label>Data</label>
-                  <input [(ngModel)]="data" name="data" type="date" class="form-control" required>
+                  <input [(ngModel)]="data" name="dataConta" type="date" class="form-control" required>
                 </div>
                 <button type="submit" class="btn btn-danger w-100 mb-3">Salvar</button>
               </form>
@@ -47,15 +47,35 @@
           </div>
         </div>
 
-        <!-- Contas a Receber (Exibição Simples com Salário) -->
+        <!-- Contas a Receber -->
         <div class="col-md-6 mb-4">
           <div class="card shadow">
             <div class="card-header bg-success text-white">Contas a Receber</div>
             <div class="card-body">
+              <form (ngSubmit)="salvarContaReceber()" #formReceber="ngForm">
+                <div class="mb-3">
+                  <label>Descrição</label>
+                  <input [(ngModel)]="receber.descricao" name="descricaoReceber" type="text" class="form-control" placeholder="Ex: Freelancer" required>
+                </div>
+                <div class="mb-3">
+                  <label>Valor</label>
+                  <input [(ngModel)]="receber.valor" name="valorReceber" type="number" class="form-control" placeholder="R$" required>
+                </div>
+                <div class="mb-3">
+                  <label>Data</label>
+                  <input [(ngModel)]="receber.data" name="dataReceber" type="date" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-success w-100 mb-3">Salvar</button>
+              </form>
+
               <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between">
+                <li *ngFor="let entrada of contasReceber" class="list-group-item d-flex justify-content-between">
+                  <span>{{ entrada.descricao }}</span>
+                  <span class="text-success">R$ {{ entrada.valor }}</span>
+                </li>
+                <li class="list-group-item d-flex justify-content-between fw-bold">
                   <span>Salário</span>
-                  <span class="text-success">R$ {{rendaMensal}}</span>
+                  <span class="text-success">R$ {{ rendaMensal }}</span>
                 </li>
               </ul>
             </div>
@@ -63,6 +83,7 @@
         </div>
       </div>
 
+      <!-- Listagens -->
       <div class="row">
         <!-- Contas a Pagar (listagem) -->
         <div class="col-md-4">
@@ -75,31 +96,32 @@
               </li>
               <li *ngIf="contasPagar.length > 0" class="list-group-item d-flex justify-content-between fw-bold">
                 <span>Total</span>
-                <span class="text-danger">R$ {{totalContas}}</span>
+                <span class="text-danger">R$ {{ totalPagar }}</span>
               </li>
             </ul>
           </div>
         </div>
 
+        <!-- Salário -->
         <div class="col-md-4">
           <div class="card shadow mb-4">
             <div class="card-header">Salário</div>
             <ul class="list-group list-group-flush">
               <li class="list-group-item d-flex justify-content-between">
                 <span>Salário</span>
-                <span class="text-success">R$ {{rendaMensal}} </span>
+                <span class="text-success">R$ {{ rendaMensal }} </span>
               </li>
             </ul>
           </div>
         </div>
 
-
+        <!-- Saldo Total -->
         <div class="col-md-4">
           <div class="card shadow mb-4">
             <div class="card-header">Saldo Total</div>
             <div class="card-body">
-              <h4 class="text-primary">R$ {{saldoTotal}}</h4>
-              <p class="mb-0">Atualizado em: {{dataAtualizacao}}</p>
+              <h4 class="text-primary">R$ {{ saldoTotal }}</h4>
+              <p class="mb-0">Atualizado em: {{ dataAtualizacao }}</p>
             </div>
           </div>
         </div>
@@ -107,4 +129,5 @@
     </div>
   </div>
 </div>
+
 

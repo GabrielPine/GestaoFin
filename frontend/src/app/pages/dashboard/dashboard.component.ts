@@ -5,8 +5,6 @@ import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
-
-
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -18,7 +16,6 @@ export class DashboardComponent implements OnInit {
   usuarioNome: string = 'Usuário';
   objetivo: string = '';
   rendaMensal: number = 0;
-  saldoTotal: number = 0;
   dataAtualizacao: string = '';
 
   descricao: string = '';
@@ -27,10 +24,10 @@ export class DashboardComponent implements OnInit {
   arquivoCSV!: File;
 
   contasPagar: { descricao: string, valor: number }[] = [];
-  get totalContas(): number {
-    return this.contasPagar.reduce((soma, conta) => soma + conta.valor, 0);
-  }
-  
+  contasReceber: { descricao: string, valor: number }[] = [];
+
+  receber = { descricao: '', valor: 0, data: '' };
+
   constructor(private router: Router, private http: HttpClient) {}
 
   ngOnInit(): void {
@@ -48,9 +45,8 @@ export class DashboardComponent implements OnInit {
     this.http.get<any>(`http://localhost:5000/perfil/${userId}`).subscribe({
       next: (data) => {
         this.objetivo = data.objetivo;
-        this.rendaMensal = (data.rendaMensal);
+        this.rendaMensal = data.rendaMensal;
         this.dataAtualizacao = new Date().toLocaleDateString();
-        this.calcularSaldo(); // provisório, atualiza ao carregar
       },
       error: (err) => {
         console.error('Erro ao buscar perfil:', err);
@@ -61,17 +57,26 @@ export class DashboardComponent implements OnInit {
     this.http.get<any[]>(`http://localhost:5000/contas/${userId}`).subscribe({
       next: (contas) => {
         this.contasPagar = contas;
-        this.calcularSaldo();
       },
       error: (err) => {
         console.error('Erro ao buscar contas:', err);
       }
     });
+
+    // Buscar contas a receber
+    this.carregarContasReceber();
   }
 
-  calcularSaldo(): void {
-    const totalContas = this.contasPagar.reduce((soma, conta) => soma + conta.valor, 0);
-    this.saldoTotal = this.rendaMensal - totalContas;
+  get totalPagar(): number {
+    return this.contasPagar.reduce((soma, conta) => soma + conta.valor, 0);
+  }
+
+  get totalReceber(): number {
+    return this.rendaMensal + this.contasReceber.reduce((soma, entrada) => soma + entrada.valor, 0);
+  }
+
+  get saldoTotal(): number {
+    return this.totalReceber - this.totalPagar;
   }
 
   logout(): void {
@@ -95,7 +100,7 @@ export class DashboardComponent implements OnInit {
     this.http.post('http://localhost:5000/contas/upload', formData).subscribe({
       next: () => {
         alert('CSV enviado com sucesso!');
-        this.recarregarContas(); // recarrega após envio
+        this.recarregarContas();
       },
       error: (err) => {
         console.error('Erro ao enviar CSV:', err);
@@ -132,13 +137,40 @@ export class DashboardComponent implements OnInit {
     this.http.get<any[]>(`http://localhost:5000/contas/${userId}`).subscribe({
       next: (contas) => {
         this.contasPagar = contas;
-        this.calcularSaldo();
       },
       error: (err) => {
         console.error('Erro ao recarregar contas:', err);
       }
     });
   }
-}
 
+  salvarContaReceber(): void {
+    const userId = localStorage.getItem('userId') || '1';
+    this.http.post('http://localhost:5000/receber', {
+      ...this.receber,
+      usuario_id: userId
+    }).subscribe({
+      next: () => {
+        alert('Entrada salva com sucesso!');
+        this.receber = { descricao: '', valor: 0, data: '' };
+        this.carregarContasReceber();
+      },
+      error: (err) => {
+        console.error('Erro ao salvar entrada:', err);
+      }
+    });
+  }
+
+  carregarContasReceber(): void {
+    const userId = localStorage.getItem('userId') || '1';
+    this.http.get<any[]>(`http://localhost:5000/receber/${userId}`).subscribe({
+      next: (entradas) => {
+        this.contasReceber = entradas;
+      },
+      error: (err) => {
+        console.error('Erro ao buscar entradas:', err);
+      }
+    });
+  }
+}
 

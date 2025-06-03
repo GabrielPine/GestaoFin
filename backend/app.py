@@ -230,6 +230,30 @@ def listar_contas(usuario_id):
 
 
 
+@app.route('/receber', methods=['POST'])
+def adicionar_conta_receber():
+    data = request.get_json()
+    conta = ContaReceber(
+        usuario_id=data['usuario_id'],
+        descricao=data['descricao'],
+        valor=data['valor'],
+        data=data['data']
+    )
+    db.session.add(conta)
+    db.session.commit()
+    return jsonify({'mensagem': 'Entrada registrada com sucesso!'})
+
+@app.route('/receber/<int:usuario_id>', methods=['GET'])
+def listar_contas_receber(usuario_id):
+    contas = ContaReceber.query.filter_by(usuario_id=usuario_id).all()
+    return jsonify([
+        {"descricao": c.descricao, "valor": float(c.valor), "data": c.data.strftime('%Y-%m-%d')}
+        for c in contas
+    ])
+
+
+
+
 # Rotas RESTful
 api.add_resource(Home, '/')
 api.add_resource(Registro, '/registrar')

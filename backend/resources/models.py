@@ -64,3 +64,12 @@ class ContaPagar(db.Model):
     data = db.Column(db.Date, nullable=False)
 
     usuario = db.relationship('Usuario', backref=db.backref('contas_pagar', lazy=True))
+
+class ContaReceber(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    usuario_id = db.Column(db.Integer, db.ForeignKey('usuario.id'), nullable=False)
+    descricao = db.Column(db.String(120), nullable=False)
+    valor = db.Column(db.Numeric(10, 2), nullable=False)
+    data = db.Column(db.Date, nullable=False)
+
+    usuario = db.relationship('Usuario', backref=db.backref('contas_receber', lazy=True))
