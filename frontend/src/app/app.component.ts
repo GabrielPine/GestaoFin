@@ -2,6 +2,8 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { FooterComponent } from './pages/footer/footer.component';
 import { HeaderComponent } from "./pages/header/header.component";
+import { FormsModule } from '@angular/forms';
+
 
 @Component({
   selector: 'app-root',
