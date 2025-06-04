@@ -22,18 +22,20 @@ export class LoginComponent {
     console.log('Email digitado:', this.email)
     console.log('Senha digitada:', this.senha)
 
-    this.http.post<any>('http://localhost:5000/login', { email: this.email, senha: this.senha })
-      .subscribe(response => {
-        if (response.mensagem === 'Login bem-sucedido') {
-          localStorage.setItem('user', response.usuario.username)  // agora salva só o nome
-          localStorage.setItem('userId', response.usuario.id.toString())  // agora salva o ID corretamente
-          this.router.navigate(['/dashboard'])
-        } else {
-          alert('Credenciais inválidas')
-        }
-      }, error => {
-        alert('Erro ao tentar fazer login')
-      })
+    this.http.post<any>('http://localhost:5000/login', {
+      email: this.email,
+      senha: this.senha
+    }).subscribe(response => {
+      if (response.mensagem === 'Login bem-sucedido') {
+        localStorage.setItem('user', response.usuario.username)
+        localStorage.setItem('userId', response.usuario.id.toString())
+        this.router.navigate(['/dashboard'])
+      } else {
+        alert('Credenciais inválidas')
+      }
+    }, error => {
+      alert('Erro ao tentar fazer login')
+    })
   }
 
   navigateToRegister() {

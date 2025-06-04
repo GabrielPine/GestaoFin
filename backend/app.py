@@ -3,6 +3,7 @@ from flask_restful import Api, Resource
 from flask_cors import CORS
 from resources.models import Usuario, Movimentacao, ContaPagar
 from resources.config import app, db
+from resources.models import ContaReceber
 from flask_mail import Mail, Message
 from itsdangerous import URLSafeTimedSerializer
 from werkzeug.security import generate_password_hash, check_password_hash

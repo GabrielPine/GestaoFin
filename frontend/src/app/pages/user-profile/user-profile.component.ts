@@ -62,7 +62,7 @@ export class UserProfileComponent implements OnInit {
       cidade: this.cidade,
       estado: this.estado,
       cep: this.cep,
-      rendaMensal: this.rendaMensal,
+      rendaMensal: parseFloat(this.rendaMensal.replace(/\./g, '').replace(',', '.')),
       objetivo: this.objetivo
     }
 
@@ -100,10 +100,16 @@ export class UserProfileComponent implements OnInit {
   }
 
   formatarMoeda(event: any): void {
-    let valor = event.target.value.replace(/\D/g, '')
-    valor = (Number(valor) / 100).toFixed(2) + ''
-    valor = valor.replace('.', ',')
-    valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
-    this.rendaMensal = 'R$ ' + valor
+  let valor = event.target.value.replace(/\D/g, '')
+  if (valor === '') {
+    this.rendaMensal = ''
+    return
   }
+
+  valor = (Number(valor) / 100).toFixed(2)
+  valor = valor.replace('.', ',')
+  valor = valor.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
+
+  this.rendaMensal = valor
+}
 }

@@ -55,8 +55,9 @@
 
       <div class="mb-3">
         <label for="rendaMensal" class="form-label">Renda mensal</label>
-        <input type="text" id="rendaMensal" class="form-control" name="rendaMensal" [value]="rendaMensal" (input)="formatarMoeda($event)" placeholder="R$ 0,00" required>
+        <input type="text" id="rendaMensal" class="form-control" [(ngModel)]="rendaMensal" name="rendaMensal" (input)="formatarMoeda($event)" placeholder="0,00" required>
       </div>
+
 
       <div class="mb-3">
         <label for="objetivo" class="form-label">Objetivo na plataforma</label>
