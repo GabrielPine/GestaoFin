@@ -6,41 +6,57 @@
       <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/personal-data']"><i class="bi bi-person"></i> Dados Pessoais</button>
       <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/balance']"><i class="bi bi-wallet2"></i> Saldo</button>
       <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/debts']"><i class="bi bi-credit-card-2-front"></i> Débitos</button>
-      <button class="btn btn-outline-secondary w-100"><i class="bi bi-gear"></i> Configurações</button>
+      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/doubts']"><i class="bi bi-question-circle"></i> Ajuda</button>
     </div>
 
     <div class="col-10 py-4 px-5">
-      <h1 class="mb-4">Débitos</h1>
+      <h1 class="mb-4">Gestão de Débitos</h1>
 
-      <div class="row mb-4">
-        <div class="col-md-6 mb-4">
-          <div class="card shadow">
-            <div class="card-header bg-danger text-white">Débitos Atuais</div>
-            <div class="card-body">
-              <form>
-                <div class="mb-3">
-                  <label>Cartão de Crédito</label>
-                  <input type="text" class="form-control mb-1" value="R$ 1200,00" disabled>
-                  <input type="text" class="form-control" value="Vencimento: 15/05/2025" disabled>
-                </div>
-                <div class="mb-3">
-                  <label>Financiamento Carro</label>
-                  <input type="text" class="form-control mb-1" value="R$ 850,00" disabled>
-                  <input type="text" class="form-control" value="Vencimento: 20/05/2025" disabled>
-                </div>
-              </form>
+      <!-- Formulário -->
+      <div class="card shadow mb-4">
+        <div class="card-header bg-danger text-white">Adicionar Débito</div>
+        <div class="card-body">
+          <form (ngSubmit)="salvarConta()">
+            <div class="mb-3">
+              <label>Descrição</label>
+              <input [(ngModel)]="descricao" name="descricao" class="form-control" placeholder="Ex.: Conta de Luz" required>
             </div>
-          </div>
+            <div class="mb-3">
+              <label>Valor</label>
+              <input [(ngModel)]="valor" name="valor" type="number" class="form-control" placeholder="R$" required>
+            </div>
+            <div class="mb-3">
+              <label>Data</label>
+              <input [(ngModel)]="data" name="data" type="date" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-danger w-100">Salvar</button>
+          </form>
         </div>
+      </div>
 
-        <div class="col-md-6 mb-4">
-          <div class="card shadow">
-            <div class="card-header bg-warning text-dark">Estatística Mensal</div>
-            <div class="card-body d-flex align-items-center justify-content-center" style="height: 100px;">
-              <p class="text-muted mb-0">Em construção...</p>
+      <!-- Lista -->
+      <div class="card shadow">
+        <div class="card-header">Débitos Cadastrados</div>
+        <ul class="list-group list-group-flush">
+          <li *ngFor="let conta of contasPagar" class="list-group-item d-flex justify-content-between">
+            <div>
+              <strong>{{ conta.descricao }}</strong> - {{ conta.data }}
             </div>
-          </div>
-        </div>
+            <div>
+              <span class="text-danger fw-bold">R$ {{ conta.valor }}</span>
+              <button class="btn btn-sm btn-outline-danger ms-3" (click)="deletarConta(conta.id)">
+                <i class="bi bi-trash"></i> Excluir
+              </button>
+            </div>
+          </li>
+          <li *ngIf="contasPagar.length > 0" class="list-group-item d-flex justify-content-between fw-bold">
+            <span>Total</span>
+            <span class="text-danger">R$ {{ totalContas }}</span>
+          </li>
+          <li *ngIf="contasPagar.length === 0" class="list-group-item text-center">
+            Nenhum débito cadastrado.
+          </li>
+        </ul>
       </div>
     </div>
   </div>

@@ -9,6 +9,7 @@ import { UserProfileComponent } from './pages/user-profile/user-profile.componen
 import { PersonalDataComponent } from './pages/personal-data/personal-data.component'
 import { DebtsComponent } from './pages/debts/debts.component'
 import { BalanceComponent } from './pages/balance/balance.component'
+import { DoubtsComponent } from './pages/doubts/doubts.component'
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -21,6 +22,7 @@ export const routes: Routes = [
   { path: 'perfil/:id', component: UserProfileComponent },
   { path: 'personal-data', component:PersonalDataComponent},
   { path: 'debts', component: DebtsComponent},
-  { path: 'balance', component: BalanceComponent}
+  { path: 'balance', component: BalanceComponent},
+  { path:'doubts', component: DoubtsComponent}
 ]
 
