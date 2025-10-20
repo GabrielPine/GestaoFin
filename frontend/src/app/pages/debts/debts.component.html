@@ -1,63 +1,136 @@
-<div class="container-fluid">
-  <div class="row min-vh-100">
-    <div class="col-2 bg-light d-flex flex-column align-items-center py-4 border-end">
-      <h4 class="mb-4">Menu</h4>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/dashboard']"><i class="bi bi-house"></i> Início</button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/personal-data']"><i class="bi bi-person"></i> Dados Pessoais</button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/balance']"><i class="bi bi-wallet2"></i> Saldo</button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/debts']"><i class="bi bi-credit-card-2-front"></i> Débitos</button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/doubts']"><i class="bi bi-question-circle"></i> Ajuda</button>
+<div class="page-grid">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2 class="menu-title">Menu</h2>
+    <nav class="menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-house"></i></span>
+        <span>Início</span>
+      </a>
+
+      <a routerLink="/personal-data" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-person"></i></span>
+        <span>Dados Pessoais</span>
+      </a>
+
+      <a routerLink="/balance" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-wallet2"></i></span>
+        <span>Saldo</span>
+      </a>
+
+      <a routerLink="/debts" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-credit-card-2-front"></i></span>
+        <span>Débitos</span>
+      </a>
+
+      <a routerLink="/extrato" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-bar-chart"></i></span>
+        <span>Extrato</span>
+      </a>
+
+      <a routerLink="/doubts" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-question-circle"></i></span>
+        <span>Ajuda</span>
+      </a>
+    </nav>
+  </aside>
+
+  <!-- Conteúdo -->
+  <section class="content">
+    <h2 class="page-title">Débitos</h2>
+
+    <!-- Formulário -->
+    <div class="card mb-4 shadow">
+      <div class="card-header bg-danger text-white">
+        <strong>Adicionar Débito</strong>
+      </div>
+      <div class="card-body">
+        <form (ngSubmit)="salvarConta()">
+          <div class="mb-3">
+            <label class="form-label">Descrição</label>
+            <input
+              [(ngModel)]="conta.descricao"
+              name="descricao"
+              type="text"
+              class="form-control"
+              placeholder="Ex.: Conta de Luz"
+              required
+            />
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Valor (R$)</label>
+            <!-- texto para aceitar 150,35; o TS normaliza -->
+            <input
+              [(ngModel)]="conta.valor"
+              name="valor"
+              type="text"
+              class="form-control"
+              placeholder="Ex.: 150,35"
+              required
+            />
+            <small class="text-muted">Aceita 150,35 ou 150.35</small>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Data</label>
+            <input
+              [(ngModel)]="conta.data"
+              name="data"
+              type="date"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn btn-danger w-100">
+            <i class="bi bi-plus-circle"></i> Salvar
+          </button>
+        </form>
+      </div>
     </div>
 
-    <div class="col-10 py-4 px-5">
-      <h1 class="mb-4">Gestão de Débitos</h1>
+    <!-- Listagem -->
+    <div class="card shadow">
+      <div class="card-header"><strong>Débitos Cadastrados</strong></div>
 
-      <!-- Formulário -->
-      <div class="card shadow mb-4">
-        <div class="card-header bg-danger text-white">Adicionar Débito</div>
-        <div class="card-body">
-          <form (ngSubmit)="salvarConta()">
-            <div class="mb-3">
-              <label>Descrição</label>
-              <input [(ngModel)]="descricao" name="descricao" class="form-control" placeholder="Ex.: Conta de Luz" required>
-            </div>
-            <div class="mb-3">
-              <label>Valor</label>
-              <input [(ngModel)]="valor" name="valor" type="number" class="form-control" placeholder="R$" required>
-            </div>
-            <div class="mb-3">
-              <label>Data</label>
-              <input [(ngModel)]="data" name="data" type="date" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-danger w-100">Salvar</button>
-          </form>
-        </div>
+      <!-- estado de carregamento -->
+      <div *ngIf="carregando" class="p-3 text-center text-muted">
+        <i class="bi bi-arrow-repeat"></i> Carregando débitos...
       </div>
 
-      <!-- Lista -->
-      <div class="card shadow">
-        <div class="card-header">Débitos Cadastrados</div>
-        <ul class="list-group list-group-flush">
-          <li *ngFor="let conta of contasPagar" class="list-group-item d-flex justify-content-between">
-            <div>
-              <strong>{{ conta.descricao }}</strong> - {{ conta.data }}
-            </div>
-            <div>
-              <span class="text-danger fw-bold">R$ {{ conta.valor }}</span>
-              <button class="btn btn-sm btn-outline-danger ms-3" (click)="deletarConta(conta.id)">
-                <i class="bi bi-trash"></i> Excluir
-              </button>
-            </div>
-          </li>
-          <li *ngIf="contasPagar.length > 0" class="list-group-item d-flex justify-content-between fw-bold">
-            <span>Total</span>
-            <span class="text-danger">R$ {{ totalContas }}</span>
-          </li>
-          <li *ngIf="contasPagar.length === 0" class="list-group-item text-center">
-            Nenhum débito cadastrado.
-          </li>
-        </ul>
-      </div>
+      <!-- lista -->
+      <ul *ngIf="!carregando" class="list-group list-group-flush">
+        <li
+          *ngFor="let item of contasPagar"
+          class="list-group-item d-flex justify-content-between align-items-center"
+        >
+          <div>
+            <strong>{{ item.descricao }}</strong> — {{ item.data }}
+          </div>
+          <div>
+            <span class="text-danger fw-bold">R$ {{ item.valor | number:'1.2-2' }}</span>
+            <button
+              class="btn btn-sm btn-outline-danger ms-3"
+              (click)="deletarConta(item.id)"
+            >
+              <i class="bi bi-trash"></i> Excluir
+            </button>
+          </div>
+        </li>
+
+        <li
+          *ngIf="contasPagar.length > 0"
+          class="list-group-item d-flex justify-content-between fw-bold"
+        >
+          <span>Total</span>
+          <span class="text-danger">R$ {{ totalDebitos() | number:'1.2-2' }}</span>
+        </li>
+
+        <li *ngIf="contasPagar.length === 0" class="list-group-item text-center">
+          Nenhum débito cadastrado.
+        </li>
+      </ul>
     </div>
-  </div>
+  </section>
 </div>

@@ -10,6 +10,7 @@ import { PersonalDataComponent } from './pages/personal-data/personal-data.compo
 import { DebtsComponent } from './pages/debts/debts.component'
 import { BalanceComponent } from './pages/balance/balance.component'
 import { DoubtsComponent } from './pages/doubts/doubts.component'
+import { ExtratoComponent } from './pages/extrato/extrato.component'
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'personal-data', component:PersonalDataComponent},
   { path: 'debts', component: DebtsComponent},
   { path: 'balance', component: BalanceComponent},
-  { path:'doubts', component: DoubtsComponent}
+  { path:'doubts', component: DoubtsComponent},
+  { path: 'extrato', component: ExtratoComponent }
 ]
 

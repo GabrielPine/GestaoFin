@@ -1,61 +1,145 @@
-<div class="container-fluid">
-  <div class="row min-vh-100">
-    <!-- Menu lateral -->
-    <div class="col-2 bg-light d-flex flex-column align-items-center py-4 border-end">
-      <h4 class="mb-4">Menu</h4>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/dashboard']">
-        <i class="bi bi-house"></i> Início
-      </button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/personal-data']">
-        <i class="bi bi-person"></i> Dados Pessoais
-      </button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/balance']">
-        <i class="bi bi-wallet2"></i> Saldo
-      </button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/debts']">
-        <i class="bi bi-credit-card-2-front"></i> Débitos
-      </button>
-      <button class="btn btn-outline-secondary w-100 mb-3" [routerLink]="['/doubts']">
-        <i class="bi bi-question-circle"></i> Ajuda
-      </button>
-    </div>
+<div class="page-grid">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <h2 class="menu-title">Menu</h2>
+    <nav class="menu">
+      <a routerLink="/dashboard" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-house"></i></span>
+        <span>Início</span>
+      </a>
+      <a routerLink="/personal-data" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-person"></i></span>
+        <span>Dados Pessoais</span>
+      </a>
+      <a routerLink="/balance" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-wallet2"></i></span>
+        <span>Saldo</span>
+      </a>
+      <a routerLink="/debts" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-credit-card-2-front"></i></span>
+        <span>Débitos</span>
+      </a>
+      <a routerLink="/extrato" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-bar-chart"></i></span>
+        <span>Extrato</span>
+      </a>
+      <a routerLink="/doubts" routerLinkActive="active" class="menu-item">
+        <span class="ico"><i class="bi bi-question-circle"></i></span>
+        <span>Ajuda</span>
+      </a>
+    </nav>
+  </aside>
 
-    <!-- Conteúdo principal -->
-    <div class="col-10 py-4 px-5">
-      <h1 class="mb-5">Bem-vindo, {{ usuarioNome }}!</h1>
+  <!-- Conteúdo -->
+  <section class="content">
+    <h2 class="page-title">Bem-vindo, {{ userName }}!</h2>
 
-      <div class="row mt-5">
-        <!-- Contas a Pagar -->
-        <div class="col-md-4 mb-4">
-          <div class="card shadow">
-            <div class="card-header bg-danger text-white">Contas a Pagar</div>
-            <div class="card-body">
-              <h4 class="text-danger">R$ {{ totalPagar }}</h4>
-            </div>
+    <div *ngIf="erro" class="alert alert-danger">{{ erro }}</div>
+
+    <!-- Cards de resumo -->
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card shadow">
+          <div class="card-header" style="background:#dc3545;height:12px;border-top-left-radius:10px;border-top-right-radius:10px;"></div>
+          <div class="card-body">
+            <h5 class="card-title">Contas a Pagar</h5>
+            <div class="display-6 text-danger">R$ {{ totalDebitos | number:'1.2-2' }}</div>
           </div>
         </div>
+      </div>
 
-        <!-- Contas a Receber -->
-        <div class="col-md-4 mb-4">
-          <div class="card shadow">
-            <div class="card-header bg-success text-white">Contas a Receber</div>
-            <div class="card-body">
-              <h4 class="text-success">R$ {{ totalReceber }}</h4>
-            </div>
+      <div class="col-md-4">
+        <div class="card shadow">
+          <div class="card-header" style="background:#198754;height:12px;border-top-left-radius:10px;border-top-right-radius:10px;"></div>
+          <div class="card-body">
+            <h5 class="card-title">Contas a Receber</h5>
+            <div class="display-6 text-success">R$ {{ totalReceitas | number:'1.2-2' }}</div>
           </div>
         </div>
+      </div>
 
-        <!-- Saldo Total -->
-        <div class="col-md-4 mb-4">
-          <div class="card shadow">
-            <div class="card-header bg-primary text-white">Saldo Total</div>
-            <div class="card-body">
-              <h4 class="text-primary">R$ {{ saldoTotal }}</h4>
-              <p class="mb-0">Atualizado em: {{ dataAtualizacao }}</p>
+      <div class="col-md-4">
+        <div class="card shadow">
+          <div class="card-header" style="background:#0d6efd;height:12px;border-top-left-radius:10px;border-top-right-radius:10px;"></div>
+          <div class="card-body">
+            <h5 class="card-title">Saldo Total</h5>
+            <div class="display-6" [ngClass]="{ 'text-success': saldoTotal >= 0, 'text-danger': saldoTotal < 0 }">
+              R$ {{ saldoTotal | number:'1.2-2' }}
             </div>
+            <small class="text-muted">Atualizado em: {{ hoje | date:'dd/MM/yyyy' }}</small>
           </div>
         </div>
       </div>
     </div>
-  </div>
+
+    <!-- Metas -->
+    <h3 class="mt-5 mb-3">Metas</h3>
+    <div class="row g-4">
+      <!-- Reserva de emergência -->
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body">
+            <h5 class="card-title mb-2">Reserva de Emergência</h5>
+            <p class="mb-2 text-muted">
+              Meta: 6× renda mensal
+              <span *ngIf="rendaMensal"> (R$ {{ rendaMensal | number:'1.2-2' }} × 6 = R$ {{ emergenciaAlvo | number:'1.2-2' }})</span>
+            </p>
+
+            <div class="progress" style="height: 14px;">
+              <div
+                class="progress-bar"
+                role="progressbar"
+                [style.width.%]="emergenciaPct"
+                [attr.aria-valuenow]="emergenciaPct"
+                aria-valuemin="0"
+                aria-valuemax="100">
+                {{ emergenciaPct | number:'1.0-0' }}%
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+              <small class="text-muted">Guardado: R$ {{ emergenciaGuardado | number:'1.2-2' }}</small>
+              <small class="text-muted">Alvo: R$ {{ emergenciaAlvo | number:'1.2-2' }}</small>
+            </div>
+
+            <div *ngIf="!rendaMensal" class="alert alert-warning mt-3 mb-0">
+              Cadastre sua renda mensal em <b>Dados Pessoais</b> para calcular esta meta.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Zerar dívidas do mês -->
+      <div class="col-md-6">
+        <div class="card shadow">
+          <div class="card-body">
+            <h5 class="card-title mb-2">Zerar dívidas do mês</h5>
+            <p class="mb-2 text-muted">
+              Total de débitos no mês: <b>R$ {{ debitosMes | number:'1.2-2' }}</b>
+            </p>
+
+            <div class="progress" style="height: 14px;">
+              <div
+                class="progress-bar bg-danger"
+                role="progressbar"
+                [style.width.%]="barraDividasPct"
+                aria-valuemin="0"
+                aria-valuemax="100">
+                {{ debitosMes > 0 ? 'Pendente' : 'OK' }}
+              </div>
+            </div>
+
+            <small class="text-muted d-block mt-2">
+              Dica: registre suas contas em <b>Débitos</b> e acompanhe o <b>Extrato</b>.
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div *ngIf="carregando" class="mt-4 text-muted">
+      <i class="bi bi-arrow-repeat"></i> Carregando...
+    </div>
+  </section>
 </div>

@@ -1,0 +1,73 @@
+.page-grid {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 1rem;
+  align-items: start;
+}
+
+/* Sidebar (mesmo visual das outras páginas) */
+.sidebar {
+  background: #fff;
+  padding: 1rem;
+  border-right: 1px solid #e5e7eb;
+  border-radius: .5rem;
+  height: fit-content;
+}
+.menu-title { font-size: 1.4rem; font-weight: 700; margin: .25rem 0 1rem; }
+.menu { display: flex; flex-direction: column; gap: .5rem; }
+.menu-item {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .65rem .8rem; border: 1px solid #e5e7eb; border-radius: .6rem;
+  background: #fff; text-decoration: none; color: #111827;
+}
+.menu-item:hover { background: #f9fafb; border-color: #d1d5db; }
+.menu-item.active { outline: 2px solid #2563eb; }
+.ico { width: 20px; text-align: center; }
+
+/* Conteúdo */
+.content { padding-right: .5rem; }
+.page-title { font-size: 2rem; font-weight: 700; margin: .5rem 0 1rem; }
+
+.filtro { display:flex; gap:1rem; align-items:end; margin: 1rem 0; flex-wrap: wrap; }
+.campo { display:flex; flex-direction:column; gap:.25rem; }
+.campo input[type="date"] { padding:.5rem .75rem; border:1px solid #ddd; border-radius:.5rem; }
+.acoes button { padding:.6rem 1rem; border-radius:.6rem; border:1px solid #d5d5d5; cursor:pointer; }
+.acoes .sec { background:#f7f7f7; }
+.erro { color:#b91c1c; margin:.5rem 0; }
+.loading { opacity:.7; margin:.5rem 0; }
+.resumo { display:flex; gap:2rem; margin:1rem 0; }
+.tabela { width:100%; border-collapse:collapse; }
+.tabela th, .tabela td { padding:.6rem .75rem; border-bottom:1px solid #eee; }
+.badge-debito, .badge-credito { padding:.15rem .5rem; border-radius:.5rem; font-size:.85rem; }
+.badge-debito { background:#fee2e2; color:#991b1b; }
+.badge-credito { background:#dcfce7; color:#166534; }
+.vazio { color:#6b7280; margin-top:1rem; }
+
+/* garante que o container é coluna */
+.sidebar .menu {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Zera margens antigas (se houver) */
+.sidebar .menu .menu-item { margin: 0; }
+
+/* AQUI está o espaçamento entre os itens (após o primeiro) */
+.sidebar .menu > * + * {
+  margin-top: 16px;          /* aumente para 20px se quiser mais */
+}
+
+/* Se seus itens estiverem dentro de <li>, use também: */
+.sidebar .menu li + li {
+  margin-top: 16px;
+}
+
+/* Se alguma regra estiver sobrepondo, aumente a especificidade: */
+aside.sidebar nav.menu > * + * { margin-top: 16px !important; }
+
+
+/* responsivo */
+@media (max-width: 992px) {
+  .page-grid { grid-template-columns: 1fr; }
+  .sidebar { position: static; order: -1; }
+}

@@ -1,172 +1,129 @@
-import { Component, OnInit } from '@angular/core'
-import { Router } from '@angular/router'
-import { HttpClient } from '@angular/common/http'
-import { RouterModule } from '@angular/router'
-import { FormsModule } from '@angular/forms'
-import { CommonModule } from '@angular/common'
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
+
+type Conta = { id: number; descricao: string; valor: number; data: string };
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
+  imports: [CommonModule, RouterModule],
   templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
-  imports: [RouterModule, FormsModule, CommonModule]
+  styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  usuarioNome: string = 'Usuário'
-  objetivo: string = ''
-  rendaMensal: number = 0
-  dataAtualizacao: string = ''
+  private readonly API = 'http://localhost:5000';
 
-  descricao: string = ''
-  valor: number = 0
-  data: string = ''
-  arquivoCSV!: File
+  // usuário
+  userName = 'Usuário';
+  rendaMensal: number | null = null;
 
-  contasPagar: { descricao: string, valor: number }[] = []
-  contasReceber: { descricao: string, valor: number }[] = []
+  // totais
+  totalDebitos = 0;
+  totalReceitas = 0;
+  saldoTotal = 0;
 
-  receber = { descricao: '', valor: 0, data: '' }
+  // metas (reserva de emergência)
+  emergenciaAlvo = 0;         // 6 x renda
+  emergenciaGuardado = 0;     // aproxima saldo >= 0
+  emergenciaPct = 0;          // 0..100
 
-  constructor(private router: Router, private http: HttpClient) {}
+  // visão rápida dívidas do mês
+  debitosMes = 0;
+  barraDividasPct = 0;        // 0 ou 100 na barra
+
+  // estado
+  hoje = new Date();
+  carregando = false;
+  erro: string | null = null;
+
+  constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    const user = localStorage.getItem('user')
-    const userId = localStorage.getItem('userId')
-
-    if (!user || !userId) {
-      this.router.navigate(['/login'])
-      return
+    const userId = localStorage.getItem('userId');
+    if (!userId) {
+      this.erro = 'Sessão expirada ou não iniciada. Faça login novamente.';
+      return;
     }
 
-    this.usuarioNome = user
+    this.carregando = true;
 
-    this.http.get<any>(`http://localhost:5000/perfil/${userId}`).subscribe({
-      next: (data) => {
-        this.objetivo = data.objetivo
-        this.rendaMensal = data.rendaMensal
-        this.dataAtualizacao = new Date().toLocaleDateString()
+    // 1) Perfil (nome/renda)
+    this.http.get<any>(`${this.API}/perfil/${userId}`).subscribe({
+      next: (perfil) => {
+        this.userName = perfil?.nomeCompleto || perfil?.username || 'Usuário';
+        this.rendaMensal = perfil?.rendaMensal != null ? Number(perfil.rendaMensal) : null;
+        if (this.rendaMensal && !isNaN(this.rendaMensal)) {
+          this.emergenciaAlvo = this.rendaMensal * 6;
+        }
       },
-      error: (err) => {
-        console.error('Erro ao buscar perfil:', err)
-      }
-    })
+      error: () => { /* segue sem travar */ }
+    });
 
-    this.http.get<any[]>(`http://localhost:5000/contas/${userId}`).subscribe({
-      next: (contas) => {
-        this.contasPagar = contas
+    // 2) Débitos
+    this.http.get<Conta[]>(`${this.API}/contas/${userId}`).subscribe({
+      next: (debitos) => {
+        const list = (debitos ?? []).map(d => ({ ...d, valor: Number(d.valor || 0) }));
+        this.totalDebitos = list.reduce((s, x) => s + x.valor, 0);
+        // mês corrente
+        const ym = this.toYM(this.hoje);
+        this.debitosMes = list
+          .filter(d => this.extractYM(d.data) === ym)
+          .reduce((s, x) => s + x.valor, 0);
+        this.recalcularSaldoEMetas();
       },
-      error: (err) => {
-        console.error('Erro ao buscar contas:', err)
+      error: () => {
+        this.erro = this.erro ?? 'Não foi possível carregar os débitos.';
+        this.carregando = false;
       }
-    })
+    });
 
-    this.carregarContasReceber()
-  }
-
-  get totalPagar(): number {
-    return this.contasPagar.reduce((soma, conta) => soma + conta.valor, 0)
-  }
-
-  get totalReceber(): number {
-    return this.contasReceber.reduce((soma, entrada) => soma + entrada.valor, 0)
-  }
-
-  get saldoTotal(): number {
-    return this.totalReceber - this.totalPagar
-  }
-
-  logout(): void {
-    localStorage.removeItem('user')
-    localStorage.removeItem('userId')
-    this.router.navigate(['/login'])
-  }
-
-  selecionarArquivo(event: any): void {
-    this.arquivoCSV = event.target.files[0]
-  }
-
-  enviarCSV(event: Event): void {
-    event.preventDefault()
-    const formData = new FormData()
-    const userId = localStorage.getItem('userId') || '1'
-
-    formData.append('file', this.arquivoCSV)
-    formData.append('usuario_id', userId)
-
-    this.http.post('http://localhost:5000/contas/upload', formData).subscribe({
-      next: () => {
-        alert('CSV enviado com sucesso!')
-        this.recarregarContas()
+    // 3) Receitas
+    this.http.get<Conta[]>(`${this.API}/receber/${userId}`).subscribe({
+      next: (receitas) => {
+        const list = (receitas ?? []).map(r => ({ ...r, valor: Number(r.valor || 0) }));
+        this.totalReceitas = list.reduce((s, x) => s + x.valor, 0);
+        this.recalcularSaldoEMetas();
       },
-      error: (err) => {
-        console.error('Erro ao enviar CSV:', err)
+      error: () => {
+        this.erro = this.erro ?? 'Não foi possível carregar as receitas.';
+        this.carregando = false;
       }
-    })
+    });
   }
 
-  salvarConta(): void {
-    const userId = localStorage.getItem('userId') || '1'
+  private recalcularSaldoEMetas(): void {
+    // saldo
+    this.saldoTotal = this.totalReceitas - this.totalDebitos;
 
-    const novaConta = {
-      usuario_id: userId,
-      descricao: this.descricao,
-      valor: this.valor,
-      data: this.data
+    // reserva de emergência (aproximação: considera saldo >= 0 como guardado)
+    this.emergenciaGuardado = Math.max(0, this.saldoTotal);
+    if (this.emergenciaAlvo > 0) {
+      this.emergenciaPct = Math.min(100, (this.emergenciaGuardado / this.emergenciaAlvo) * 100);
+    } else {
+      this.emergenciaPct = 0;
     }
 
-    this.http.post('http://localhost:5000/conta', novaConta).subscribe({
-      next: () => {
-        alert('Conta salva com sucesso!')
-        this.descricao = ''
-        this.valor = 0
-        this.data = ''
-        this.recarregarContas()
-      },
-      error: (err) => {
-        console.error('Erro ao salvar conta:', err)
-      }
-    })
+    // barra "zerar dívidas do mês": 100% se há débitos no mês, 0% se não há
+    this.barraDividasPct = this.debitosMes > 0 ? 100 : 0;
+
+    this.carregando = false;
   }
 
-  recarregarContas(): void {
-    const userId = localStorage.getItem('userId') || '1'
-    this.http.get<any[]>(`http://localhost:5000/contas/${userId}`).subscribe({
-      next: (contas) => {
-        this.contasPagar = contas
-      },
-      error: (err) => {
-        console.error('Erro ao recarregar contas:', err)
-      }
-    })
+  // helpers de datas
+  private toYM(d: Date): string {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}`;
   }
-
-  salvarContaReceber(): void {
-    const userId = localStorage.getItem('userId') || '1'
-    this.http.post('http://localhost:5000/receber', {
-      ...this.receber,
-      usuario_id: userId
-    }).subscribe({
-      next: () => {
-        alert('Entrada salva com sucesso!')
-        this.receber = { descricao: '', valor: 0, data: '' }
-        this.carregarContasReceber()
-      },
-      error: (err) => {
-        console.error('Erro ao salvar entrada:', err)
-      }
-    })
-  }
-
-  carregarContasReceber(): void {
-    const userId = localStorage.getItem('userId') || '1'
-    this.http.get<any[]>(`http://localhost:5000/receber/${userId}`).subscribe({
-      next: (entradas) => {
-        this.contasReceber = entradas
-      },
-      error: (err) => {
-        console.error('Erro ao buscar entradas:', err)
-      }
-    })
+  private extractYM(s: string): string {
+    // aceita 'YYYY-MM-DD' ou 'DD/MM/YYYY'
+    if (!s) return '';
+    if (s.includes('/')) {
+      const [dd, mm, yyyy] = s.split('/');
+      return `${yyyy}-${mm.padStart(2, '0')}`;
+    }
+    return s.slice(0, 7); // ISO
   }
 }
