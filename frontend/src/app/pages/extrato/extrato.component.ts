@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 type Lancamento = {
@@ -33,7 +33,18 @@ export class ExtratoComponent {
   // dados
   lancamentos: Lancamento[] = [];
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
+
+  // ========== LOGOUT ==========
+  logout(): void {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token'); // se você usa token
+    // localStorage.clear(); // opcional
+    this.router.navigate(['/login']);
+  }
 
   private getUserIdOrStop(): string | null {
     const userId = localStorage.getItem('userId');

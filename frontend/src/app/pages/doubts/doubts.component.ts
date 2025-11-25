@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -7,10 +7,11 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [RouterModule, CommonModule],
   templateUrl: './doubts.component.html',
-  styleUrl: './doubts.component.css'
+  styleUrls: ['./doubts.component.css']
 })
 export class DoubtsComponent {
-activeIndex: number | null = null;
+
+  activeIndex: number | null = null;
 
   duvidas = [
     {
@@ -40,16 +41,26 @@ Nesta área, você pode visualizar e atualizar suas informações cadastrais de 
 A plataforma adota medidas de segurança para garantir a confidencialidade e integridade das suas informações.`
     },
     {
-    pergunta: 'Consigo acessar de outro dispositivo?',
-    resposta: 'Sim. Sua conta pode ser acessada de qualquer dispositivo com conexão à internet, basta entrar com seu e-mail e senha cadastrados.'
-  },
-  {
-    pergunta: 'Esqueci minha senha. E agora?',
-    resposta: 'Na tela de login, clique em “Esqueci minha senha”. Você receberá um e-mail com instruções para redefinir sua senha de forma segura.'
-  }
+      pergunta: 'Consigo acessar de outro dispositivo?',
+      resposta: 'Sim. Sua conta pode ser acessada de qualquer dispositivo com conexão à internet, basta entrar com seu e-mail e senha cadastrados.'
+    },
+    {
+      pergunta: 'Esqueci minha senha. E agora?',
+      resposta: 'Na tela de login, clique em “Esqueci minha senha”. Você receberá um e-mail com instruções para redefinir sua senha de forma segura.'
+    }
   ];
+
+  constructor(private router: Router) {}
 
   toggleCard(index: number) {
     this.activeIndex = this.activeIndex === index ? null : index;
+  }
+
+  // ========= LOGOUT =========
+  logout(): void {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token'); // se houver token
+    // localStorage.clear(); // opcional
+    this.router.navigate(['/login']);
   }
 }

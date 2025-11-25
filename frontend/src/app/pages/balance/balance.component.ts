@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -24,7 +24,10 @@ export class BalanceComponent implements OnInit {
 
   private readonly API = 'http://localhost:5000';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.carregarContasReceber();
@@ -47,6 +50,14 @@ export class BalanceComponent implements OnInit {
       return Number(s.replace(/\./g, '').replace(',', '.'));
     }
     return Number(s);
+  }
+
+  // ---------- LOGOUT ----------
+  logout(): void {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token'); // se tiver token
+    // ou: localStorage.clear();
+    this.router.navigate(['/login']);
   }
 
   // ---------- API ----------

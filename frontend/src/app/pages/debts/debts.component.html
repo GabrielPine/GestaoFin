@@ -3,6 +3,7 @@
   <aside class="sidebar">
     <h2 class="menu-title">Menu</h2>
     <nav class="menu">
+
       <a routerLink="/dashboard" routerLinkActive="active" class="menu-item">
         <span class="ico"><i class="bi bi-house"></i></span>
         <span>Início</span>
@@ -32,6 +33,13 @@
         <span class="ico"><i class="bi bi-question-circle"></i></span>
         <span>Ajuda</span>
       </a>
+
+      <!-- BOTÃO SAIR -->
+      <button class="menu-item logout-btn" type="button" (click)="logout()">
+        <span class="ico"><i class="bi bi-box-arrow-right"></i></span>
+        <span>Sair</span>
+      </button>
+      
     </nav>
   </aside>
 
@@ -60,7 +68,6 @@
 
           <div class="mb-3">
             <label class="form-label">Valor (R$)</label>
-            <!-- texto para aceitar 150,35; o TS normaliza -->
             <input
               [(ngModel)]="conta.valor"
               name="valor"

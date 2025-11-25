@@ -1,44 +1,38 @@
 .headerEscuro {
-    background-color: rgb(18, 18, 207); 
+    background-color: rgb(18, 18, 207);
     color: white;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;   /* Centraliza tudo */
     align-items: center;
-    padding: 0px 0px; 
+    padding: 6px 0;            /* Altura reduzida */
     position: relative;
+    width: 100%;
+    border-bottom: 3px solid rgba(255,255,255,0.2); /* linha discreta */
 }
 
+/* Container geral */
 .logo-container {
     display: flex;
     align-items: center;
+    gap: 10px;
 }
 
-
-
-.text-container {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%); 
-}
-
-
-.header-text {
-    font-size: 24px; 
-    font-weight: bold;
-    text-align: center; 
-}
-
+/* Logo menor e mais proporcional */
 .logo-img {
-    width: 100px;
+    width: 45px;     /* reduzido de 100px → 45px */
     height: auto;
-    margin-right: 2px;
-    vertical-align: middle;
-    margin-top: 0px;
-    margin-bottom: 0px;
-  }
-  
-  .logo-container {
-    display: flex;
-    align-items: center;
-  }
-  
+}
+
+/* Texto centralizado */
+.header-text {
+    font-size: 20px;   /* menor e mais elegante */
+    font-weight: 600;
+    text-align: center;
+    margin: 0;
+}
+
+/* Remove conflitos duplicados */
+.text-container {
+    position: static;
+    transform: none;
+}

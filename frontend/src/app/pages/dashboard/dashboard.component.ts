@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 
 type Conta = { id: number; descricao: string; valor: number; data: string };
@@ -19,7 +19,7 @@ export class DashboardComponent implements OnInit {
   userName = 'Usuário';
   rendaMensal: number | null = null;
 
-  // totais
+  // totais gerais
   totalDebitos = 0;
   totalReceitas = 0;
   saldoTotal = 0;
@@ -31,19 +31,27 @@ export class DashboardComponent implements OnInit {
 
   // visão rápida dívidas do mês
   debitosMes = 0;
-  barraDividasPct = 0;        // 0 ou 100 na barra
+  receitasMes = 0;
+  saldoMes = 0;
+  barraDividasPct = 0;        // 0..100
+  dividasQuitadasMes = false; // true = entradas do mês >= saídas do mês
 
   // estado
   hoje = new Date();
   carregando = false;
   erro: string | null = null;
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     const userId = localStorage.getItem('userId');
     if (!userId) {
       this.erro = 'Sessão expirada ou não iniciada. Faça login novamente.';
+      // opcional: já redirecionar
+      // this.router.navigate(['/login']);
       return;
     }
 
@@ -61,16 +69,19 @@ export class DashboardComponent implements OnInit {
       error: () => { /* segue sem travar */ }
     });
 
+    const ymAtual = this.toYM(this.hoje);
+
     // 2) Débitos
     this.http.get<Conta[]>(`${this.API}/contas/${userId}`).subscribe({
       next: (debitos) => {
         const list = (debitos ?? []).map(d => ({ ...d, valor: Number(d.valor || 0) }));
         this.totalDebitos = list.reduce((s, x) => s + x.valor, 0);
-        // mês corrente
-        const ym = this.toYM(this.hoje);
+
+        // débitos do mês atual
         this.debitosMes = list
-          .filter(d => this.extractYM(d.data) === ym)
+          .filter(d => this.extractYM(d.data) === ymAtual)
           .reduce((s, x) => s + x.valor, 0);
+
         this.recalcularSaldoEMetas();
       },
       error: () => {
@@ -84,6 +95,12 @@ export class DashboardComponent implements OnInit {
       next: (receitas) => {
         const list = (receitas ?? []).map(r => ({ ...r, valor: Number(r.valor || 0) }));
         this.totalReceitas = list.reduce((s, x) => s + x.valor, 0);
+
+        // receitas do mês atual
+        this.receitasMes = list
+          .filter(r => this.extractYM(r.data) === ymAtual)
+          .reduce((s, x) => s + x.valor, 0);
+
         this.recalcularSaldoEMetas();
       },
       error: () => {
@@ -93,19 +110,34 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  // método chamado pelo botão "Sair" do menu
+  logout(): void {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('token'); // ajuste se o nome da chave for outro
+    // ou: localStorage.clear();
+    this.router.navigate(['/login']);
+  }
+
   private recalcularSaldoEMetas(): void {
-    // saldo
+    // saldo geral
     this.saldoTotal = this.totalReceitas - this.totalDebitos;
 
     // reserva de emergência (aproximação: considera saldo >= 0 como guardado)
     this.emergenciaGuardado = Math.max(0, this.saldoTotal);
     if (this.emergenciaAlvo > 0) {
-      this.emergenciaPct = Math.min(100, (this.emergenciaGuardado / this.emergenciaAlvo) * 100);
+      this.emergenciaPct = Math.min(
+        100,
+        (this.emergenciaGuardado / this.emergenciaAlvo) * 100
+      );
     } else {
       this.emergenciaPct = 0;
     }
 
-    // barra "zerar dívidas do mês": 100% se há débitos no mês, 0% se não há
+    // saldo do mês e status das dívidas do mês
+    this.saldoMes = this.receitasMes - this.debitosMes;
+    this.dividasQuitadasMes = this.saldoMes >= 0;
+
+    // barra: apenas indicador visual (pode manter 100% se houver débitos)
     this.barraDividasPct = this.debitosMes > 0 ? 100 : 0;
 
     this.carregando = false;
@@ -117,6 +149,7 @@ export class DashboardComponent implements OnInit {
     const m = String(d.getMonth() + 1).padStart(2, '0');
     return `${y}-${m}`;
   }
+
   private extractYM(s: string): string {
     // aceita 'YYYY-MM-DD' ou 'DD/MM/YYYY'
     if (!s) return '';

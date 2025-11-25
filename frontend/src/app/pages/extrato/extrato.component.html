@@ -3,6 +3,7 @@
   <aside class="sidebar">
     <h2 class="menu-title">Menu</h2>
     <nav class="menu">
+
       <a routerLink="/dashboard" routerLinkActive="active" class="menu-item">
         <span class="ico"><i class="bi bi-house"></i></span>
         <span>Início</span>
@@ -32,6 +33,13 @@
         <span class="ico"><i class="bi bi-question-circle"></i></span>
         <span>Ajuda</span>
       </a>
+
+      <!-- BOTÃO SAIR -->
+      <button class="menu-item logout-btn" type="button" (click)="logout()">
+        <span class="ico"><i class="bi bi-box-arrow-right"></i></span>
+        <span>Sair</span>
+      </button>
+
     </nav>
   </aside>
 
@@ -57,6 +65,7 @@
                 required
               />
             </div>
+
             <div class="col-md-4">
               <label class="form-label">Fim</label>
               <input
@@ -67,6 +76,7 @@
                 required
               />
             </div>
+
             <div class="col-md-4 d-flex align-items-end">
               <button type="submit" class="btn btn-primary w-100">
                 <i class="bi bi-search"></i> Buscar
@@ -104,7 +114,11 @@
             — {{ l.descricao }}
             <span class="text-muted"> — {{ l.data }}</span>
           </div>
-          <div class="fw-bold" [ngClass]="{ 'text-success': l.tipo === 'CREDITO', 'text-danger': l.tipo === 'DEBITO' }">
+
+          <div
+            class="fw-bold"
+            [ngClass]="{ 'text-success': l.tipo === 'CREDITO', 'text-danger': l.tipo === 'DEBITO' }"
+          >
             R$ {{ l.valor | number:'1.2-2' }}
           </div>
         </li>
@@ -125,6 +139,7 @@
           </div>
         </div>
       </div>
+
       <div class="col-md-4">
         <div class="card shadow">
           <div class="card-body d-flex justify-content-between">
@@ -133,6 +148,7 @@
           </div>
         </div>
       </div>
+
       <div class="col-md-4">
         <div class="card shadow">
           <div class="card-body d-flex justify-content-between">
@@ -147,5 +163,6 @@
         </div>
       </div>
     </div>
+
   </section>
 </div>

@@ -2,17 +2,31 @@
     background-color: rgb(18, 18, 207);
     color: white;
     text-align: center;
+
+    /* DIMENSÃO / LAYOUT */
+    position: fixed;      /* fica preso na tela */
+    bottom: 0;            /* encostado no fundo */
+    left: 0;
+    width: 100%;
+    padding: 6px 0;       /* altura mais baixinha */
+    z-index: 100;         /* fica na frente do conteúdo */
 }
 
 .footer {
-    border-bottom: 10px solid rgb(18, 18, 207); 
-    padding-bottom: 10px; 
+    border-top: 3px solid rgba(255, 255, 255, 0.2);
+    padding: 0;
 }
 
-footer img {
-    margin-top: 0px; 
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 0.9rem;
 }
 
-.footer .col-auto {
-    padding-top: 10px; 
+.footer img {
+    width: 45px;
+    margin: 0;
+    padding: 0;
 }
