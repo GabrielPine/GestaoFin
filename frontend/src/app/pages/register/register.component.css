@@ -1,5 +1,5 @@
 .btn-primary {
-  background-color: #007bff !important; 
+  background-color: #007bff !important;
   color: white !important;
   border: none;
   border-radius: 5px;
@@ -8,11 +8,11 @@
 }
 
 .btn-primary:hover {
-  background-color: #0056b3 !important; 
+  background-color: #0056b3 !important;
 }
 
 .btn-custom-green {
-  background-color: #00804b !important; 
+  background-color: #00804b !important;
   color: white !important;
   border: none;
   border-radius: 5px;
@@ -24,8 +24,10 @@
   background-color: #006a3f;
 }
 
-html, body {
-  background-color: white; 
+/* Layout geral */
+html,
+body {
+  background-color: white;
   margin: 0;
   padding: 0;
   height: 100%;
@@ -59,9 +61,34 @@ label {
 }
 
 .mb-3 {
-  margin-bottom: 1rem !important; 
+  margin-bottom: 1rem !important;
 }
 
 .text-start.mt-0.mb-3 {
   margin-bottom: 1rem;
+}
+
+/* Lista de critérios da senha */
+.list-unstyled {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.list-unstyled li {
+  margin-bottom: 3px;
+}
+
+/* Cores dos critérios (vermelho/verde) */
+.text-danger {
+  color: #d9534f !important; /* vermelho */
+}
+
+.text-success {
+  color: #28a745 !important; /* verde */
+}
+
+/* Deixando o texto dos critérios mais discreto */
+.small {
+  font-size: 0.85rem;
 }

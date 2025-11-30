@@ -1,9 +1,12 @@
 <div class="d-flex justify-content-center align-items-center vh-100">
   <div class="card p-4 shadow-lg" style="width: 400px; border-radius: 10px;">
+
     <h2 class="text-center">Criar Conta</h2>
     <p class="text-center text-muted">Gerencie suas finanças de forma simples!</p>
 
     <form (ngSubmit)="register()">
+
+      <!-- Nome -->
       <div class="mb-3">
         <label for="username" class="form-label">Nome</label>
         <input
@@ -17,6 +20,7 @@
         >
       </div>
 
+      <!-- Email -->
       <div class="mb-3">
         <label for="email" class="form-label">E-mail</label>
         <input
@@ -30,6 +34,7 @@
         >
       </div>
 
+      <!-- Senha -->
       <div class="mb-3">
         <label for="senha" class="form-label">Senha</label>
         <input
@@ -40,15 +45,42 @@
           class="form-control"
           placeholder="Digite sua senha"
           required
+          (input)="validatePassword()"
         >
       </div>
 
-      <button type="submit" class="btn btn-primary w-100 mb-3">Criar Conta</button>
+      <!-- ✅ AQUI É A PARTE NOVA DOS CRITÉRIOS -->
+      <ul class="list-unstyled small mt-2">
+        <li [ngClass]="{'text-success': hasUpper, 'text-danger': !hasUpper}">
+          ✔ Pelo menos 1 letra maiúscula
+        </li>
+        <li [ngClass]="{'text-success': hasLower, 'text-danger': !hasLower}">
+          ✔ Pelo menos 1 letra minúscula
+        </li>
+        <li [ngClass]="{'text-success': hasNumber, 'text-danger': !hasNumber}">
+          ✔ Pelo menos 1 número
+        </li>
+        <li [ngClass]="{'text-success': hasSpecial, 'text-danger': !hasSpecial}">
+          ✔ Pelo menos 1 caractere especial (!&#64;#$%&*)
+        </li>
+
+        <li [ngClass]="{'text-success': hasMinLength, 'text-danger': !hasMinLength}">
+          ✔ Mínimo de 8 caracteres
+        </li>
+      </ul>
+
+      <button type="submit" class="btn btn-primary w-100 mb-3 mt-2">
+        Criar Conta
+      </button>
+
     </form>
 
     <div class="text-center text-muted">
       <p class="mb-2">Já possui uma conta?</p>
-      <button (click)="navigateToLogin()" class="btn btn-custom-green w-100">Entrar</button> 
+      <button (click)="navigateToLogin()" class="btn btn-custom-green w-100">
+        Entrar
+      </button>
     </div>
+
   </div>
 </div>
